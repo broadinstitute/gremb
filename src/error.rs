@@ -46,3 +46,11 @@ impl std::error::Error for Error {
         self.source.as_deref()
     }
 }
+
+impl From<&str> for Error {
+    fn from(message: &str) -> Self { Error::new(message) }
+}
+
+impl From<String> for Error {
+    fn from(message: String) -> Self { Error::new(message) }
+}

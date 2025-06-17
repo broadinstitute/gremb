@@ -1,14 +1,14 @@
-use crate::conf::Config;
+use crate::config::Config;
 use crate::error::Error;
 
 pub mod error;
-pub(crate) mod conf;
+pub(crate) mod config;
 pub(crate) mod evenflow;
 
 pub fn run() -> Result<(), Error> {
-    let config = conf::get_config()?;
+    let config = config::get_config()?;
     match config {
-        Config::Evenflow => { evenflow::run()?; }
+        Config::Evenflow(config) => { evenflow::run(config)?; }
     }
     Ok(())
 }
