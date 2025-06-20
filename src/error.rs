@@ -23,6 +23,22 @@ impl Error {
             source: Some(Box::new(source)),
         }
     }
+    pub fn wrap<S, E>(message: S, error: E) -> Self
+    where
+        S: Into<String>,
+        E: std::error::Error + 'static,
+    {
+        Error::with_source(message, error)
+    }
+}
+
+pub trait ResultWrapErr<T, E: std::error::Error + 'static> {
+    fn wrap_err<S>(self, message: S) -> Result<T, Error> where S: Into<String>;
+}
+
+impl<T, E: std::error::Error + 'static> ResultWrapErr<T, E> for Result<T, E> {
+    fn wrap_err<S>(self, message: S) -> Result<T, Error>
+    where S: Into<String> { self.map_err(|e| Error::wrap(message, e)) }
 }
 
 impl Display for Error {
@@ -53,4 +69,10 @@ impl From<&str> for Error {
 
 impl From<String> for Error {
     fn from(message: String) -> Self { Error::new(message) }
+}
+
+impl From<csv::Error> for Error {
+    fn from(error: csv::Error) -> Self {
+        Error::with_source("CSV error", error)
+    }
 }
